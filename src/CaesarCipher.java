@@ -1,19 +1,22 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class CaesarCipher {
 
-    static List<Character> fileText = getArrayList();
+    static List<Character> simbolsText = getArrayList();
 
     public static void main(String[] args) {
 //      C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
@@ -50,6 +53,7 @@ public class CaesarCipher {
     }
 
 //    Нужно сделать так, чтобы если символ введен неверно программа не продолжалась, а ожидалла корректного ввода.
+//    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
     static public int shift(int key) {
         try (Scanner in = new Scanner(System.in)) {
             System.out.println("Сдвиг в право\\лево (L\\R):");
@@ -68,24 +72,25 @@ public class CaesarCipher {
 //    Можно попробовать упростить, реализовав метод с одним buffer'ом.
 //    Надо найти вариант, как реализовать этот метод так, чтобы не повторялся код, иначе создавать отдельный метод с таким же
 //    кодом было бы иррационально.
+//    Тут нужно доделать проверку, чтобы если index > fileText.length начинался с начала
     static public void encrypt(String uri, int key) {
-        try (FileChannel text = FileChannel.open(Paths.get(uri))) {
-            ByteBuffer readBuffer = ByteBuffer.allocate((int) text.size());
+        try (Reader file = new FileReader(uri)) {
+            BufferedReader buffREader = new BufferedReader(file);
 
             StringBuilder builder = new StringBuilder();
+            List<Character> charList = new ArrayList<>();
+            while (buffREader.ready()) {
+                charList.add((char) buffREader.read());
+            }
+            System.out.println(charList);
 
-            text.read(readBuffer);
-            readBuffer.flip();
+            charList.replaceAll(o -> simbolsText.get(simbolsText.indexOf(o) + key));
 
-            while (readBuffer.hasRemaining()) {
-//               Тут нужно доделать проверку, чтобы если index > fileText.length начинался с начала
-//                builder.append(fileText.get(fileText.indexOf((char) readBuffer.get())+ key));
-                builder.append(readBuffer.getChar());
-//                System.out.println();
-//                System.out.println((char) readBuffer.get());
+            for (char aChar: charList) {
+                builder.append(aChar);
             }
             String encryptedText = builder.toString();
-            System.out.println();
+            System.out.println(encryptedText);
 
             ByteBuffer writeBuffer = ByteBuffer.allocate(encryptedText.getBytes().length);
             writeBuffer.put(encryptedText.getBytes());
@@ -111,7 +116,7 @@ public class CaesarCipher {
     }
 
      public static List<Character> getArrayList() {
-        String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя.,\":-!? ";
+        String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя.,\":-! ?";
         ArrayList<Character> chars = new ArrayList<>();
         for (char ch: alphabet.toCharArray()) {
             chars.add(ch);
