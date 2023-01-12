@@ -18,11 +18,15 @@ public class CaesarCipher {
 
     static List<Character> simbolsText = getArrayList();
 
+//    ДЕДЛАЙН ДЛЯ ЭТОГО ПРОЕКТА 21 ЯНВАРЯ (22 КРАЙ)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     public static void main(String[] args) {
 //      C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
 //      Перенести мейн в отдельный класс, в логику ниже прописать в констркуторе.
+        System.out.println(simbolsText.size());
         String uri;
         int key = 0;
+        boolean isMinus;
         try (Scanner in = new Scanner(System.in)) {
 
             while (true) {
@@ -40,52 +44,74 @@ public class CaesarCipher {
                 System.out.println("Сдвиг на (натуральное не отрицательное число):");
                 key = in.nextInt();
                 if (key <= 0) {
-                    System.out.println("Число должно быть положительным");
+                    System.out.println("Число должно быть положительным и не должно равняться нулю");
                 }
             }
 
-            key = shift(key);
+            isMinus = shift();
 
             System.out.println(key);
+            System.out.println(isMinus);
 
-            encrypt(uri,key);
+            encrypt(uri,key, isMinus);
         }
     }
 
-//    Нужно сделать так, чтобы если символ введен неверно программа не продолжалась, а ожидалла корректного ввода.
-//    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
-    static public int shift(int key) {
+    static public boolean shift() {
         try (Scanner in = new Scanner(System.in)) {
-            System.out.println("Сдвиг в право\\лево (L\\R):");
-            String sdvig = in.nextLine();
-            switch (sdvig) {
-                case "L" -> key = key * (-1);
-                case "R" -> {}
-                default -> System.out.println("Не верный ввод");
+            System.out.println("Сдвиг в право\\лево (l\\r):");
+            boolean result = false;
+            String sdvig = "";
+            while (!sdvig.equals("l") && !sdvig.equals("r")) {
+                sdvig = in.nextLine();
+                if (!sdvig.equals("l") && !sdvig.equals("r")) {
+                    System.out.println("Неверный ввод");
+                }else if (sdvig.equals("l")) {
+                    result = true;
+                }
             }
-            return key;
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-//    Можно попробовать упростить, реализовав метод с одним buffer'ом.
 //    Надо найти вариант, как реализовать этот метод так, чтобы не повторялся код, иначе создавать отдельный метод с таким же
 //    кодом было бы иррационально.
-//    Тут нужно доделать проверку, чтобы если index > fileText.length начинался с начала
-    static public void encrypt(String uri, int key) {
-        try (Reader file = new FileReader(uri)) {
-            BufferedReader buffREader = new BufferedReader(file);
 
-            StringBuilder builder = new StringBuilder();
+//    Вместо ByteBuffer writeBuffer попробовать использовать буферы, которые сразу хронят char
+//    Попробовать использовать для чтения файла класс Files, так как там есть метод который читает весь файл и овзвращает его в виде строкиё
+
+//    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
+    static public void encrypt(String uri, int key, boolean rotation) {
+        try (Reader file = new FileReader(uri)) {
+            BufferedReader buffReader = new BufferedReader(file);
+
             List<Character> charList = new ArrayList<>();
-            while (buffREader.ready()) {
-                charList.add((char) buffREader.read());
+            while (buffReader.ready()) {
+                charList.add((char) buffReader.read());
             }
             System.out.println(charList);
 
-            charList.replaceAll(o -> simbolsText.get(simbolsText.indexOf(o) + key));
+            if (rotation){
+                for (int i = 0; i < charList.size(); i++) {
+                    int encryptedSimbolIndex = simbolsText.indexOf(charList.get(i)) - key;
+                        while (encryptedSimbolIndex < 0) {
+                            encryptedSimbolIndex = encryptedSimbolIndex + simbolsText.size();
+                        }
+                    charList.set(i, simbolsText.get(encryptedSimbolIndex));
+                }
+            } else {
+                for (int i = 0; i < charList.size(); i++) {
+                    int encryptedSimbolIndex = simbolsText.indexOf(charList.get(i)) + key;
+                        while (encryptedSimbolIndex >= simbolsText.size()) {
+                            encryptedSimbolIndex = encryptedSimbolIndex - simbolsText.size();
+                        }
+                    charList.set(i, simbolsText.get(encryptedSimbolIndex));
+                }
+            }
 
+            StringBuilder builder = new StringBuilder();
             for (char aChar: charList) {
                 builder.append(aChar);
             }
