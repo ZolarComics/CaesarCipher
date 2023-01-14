@@ -2,11 +2,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class CaesarCipher {
-
-    static List<Character> simbolsText = Main.getArrayList();
+    //"C:\\Users\\srgjz\\IdeaProjects\\CaesarCipher\\src\\alphabet"
+    static List<Character> simbolsText = FileWork.getCharList("src/alphabet");
     static String uri;
     static int key;
     static boolean isLeft;
@@ -29,7 +31,7 @@ public class CaesarCipher {
                 methodToDo = in.nextLine();
                 if (!methodToDo.equals("c") && !methodToDo.equals("d")) {
                     System.out.println("Неверный ввод");
-                }else if (methodToDo.equals("d")) {
+                } else if (methodToDo.equals("d")) {
                     isDecoding = true;
                 }
             }
@@ -62,7 +64,7 @@ public class CaesarCipher {
                 shiftSimbol = in.nextLine();
                 if (!shiftSimbol.equals("l") && !shiftSimbol.equals("r")) {
                     System.out.println("Неверный ввод");
-                }else if (shiftSimbol.equals("l")) {
+                } else if (shiftSimbol.equals("l")) {
                     isLeft = true;
                 }
             }
@@ -72,55 +74,46 @@ public class CaesarCipher {
 //    Вместо ByteBuffer writeBuffer попробовать использовать буферы, которые сразу хронят char
 //    Попробовать использовать для чтения файла класс Files, так как там есть метод который читает весь файл и овзвращает его в виде строкиё
 
-//    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
+    //    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
 //    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\textCoded.txt
     static public void encrypt() {
+        getCaesarCipherData();
+        List<Character> fileText = FileWork.getCharList(uri);
+        List<Character> encryptedText;
         try {
-            getCaesarCipherData();
-            List<Character> fileText = FileWork.getCharList(uri);
 
             if (isDecoding) {
                 if (isLeft) {
-                    RightCoding(fileText);
+                    encryptedText = RightCoding(fileText);
                 } else {
-                    LeftCoding(fileText);
+                    encryptedText = LeftCoding(fileText);
                 }
             } else {
-                if (isLeft){
-                    LeftCoding(fileText);
+                if (isLeft) {
+                    encryptedText = LeftCoding(fileText);
                 } else {
-                    RightCoding(fileText);
+                    encryptedText = RightCoding(fileText);
                 }
             }
 
-            FileWork.setEncryptFile(fileText, uri, isDecoding);
+            FileWork.setEncryptFile(encryptedText, uri, isDecoding);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void LeftCoding(List<Character> inputText) {
-        for (int i = 0; i < inputText.size(); i++) {
-            if (!simbolsText.contains(inputText.get(i)))
-                continue;
-            int encryptedSimbolIndex = simbolsText.indexOf(inputText.get(i)) - key;
-            while (encryptedSimbolIndex < 0) {
-                encryptedSimbolIndex = encryptedSimbolIndex + simbolsText.size();
-            }
-            inputText.set(i, simbolsText.get(encryptedSimbolIndex));
-        }
+    public static List<Character> LeftCoding(List<Character> inputText) {
+        Stream<Character> stream = inputText.stream();
+        key = simbolsText.size() - (key % simbolsText.size());
+        return stream.filter(x -> simbolsText.contains(x)).
+                map(x -> simbolsText.get((simbolsText.indexOf(x) + key) % simbolsText.size())).collect(Collectors.toList());
     }
-    public static void RightCoding(List<Character> inputText) {
-        for (int i = 0; i < inputText.size(); i++) {
-            if (!simbolsText.contains(inputText.get(i)))
-                continue;
-            int encryptedSimbolIndex = simbolsText.indexOf(inputText.get(i)) + key;
-            while (encryptedSimbolIndex >= simbolsText.size()) {
-                encryptedSimbolIndex = encryptedSimbolIndex - simbolsText.size();
-            }
-            inputText.set(i, simbolsText.get(encryptedSimbolIndex));
-        }
+
+    public static List<Character> RightCoding(List<Character> inputText) {
+        Stream<Character> stream = inputText.stream();
+        return stream.filter(x -> simbolsText.contains(x)).
+                map(x -> simbolsText.get((simbolsText.indexOf(x) + key) % simbolsText.size())).collect(Collectors.toList());
     }
 
 

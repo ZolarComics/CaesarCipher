@@ -22,13 +22,4 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-
-    public static List<Character> getArrayList() {
-        String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ.,\":-! ?";
-        ArrayList<Character> chars = new ArrayList<>();
-        for (char ch: alphabet.toCharArray()) {
-            chars.add(ch);
-        }
-        return chars;
-    }
 }
