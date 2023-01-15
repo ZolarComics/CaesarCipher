@@ -1,52 +1,34 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
-
 
 public class CaesarCipher {
     //"C:\\Users\\srgjz\\IdeaProjects\\CaesarCipher\\src\\alphabet"
-    static List<Character> simbolsText = FileWork.getCharList("src/alphabet");
-    static String uri;
     static int key;
     static boolean isLeft;
-    static boolean isDecoding;
+    static char methodSimbol;
 
 //    ДЕДЛАЙН ДЛЯ ЭТОГО ПРОЕКТА 21 ЯНВАРЯ (22 КРАЙ)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //      C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
 
-//      System.out.println((int) '.'); // Способ, с помощью которого можно получить числовое значение символа.
-//      System.out.println(1040 + 31); // Соответсвенно, знаюя что можно сделтаь так, нужно переписать весь код с учетом этих знаний.
-//      System.out.println((int) 'Я'); // Хотя по предварительнымм выводам рзницы особой нет, что там есть ключи, что там индексы.
-
     public static void getCaesarCipherData() {
         try (Scanner in = new Scanner(System.in)) {
             System.out.println("Шифровка\\Разшифровка (c\\d):");
-            isDecoding = false;
+            methodSimbol = 'c';
             String methodToDo = "";
             while (!methodToDo.equals("c") && !methodToDo.equals("d")) {
                 methodToDo = in.nextLine();
                 if (!methodToDo.equals("c") && !methodToDo.equals("d")) {
                     System.out.println("Неверный ввод");
                 } else if (methodToDo.equals("d")) {
-                    isDecoding = true;
+                    methodSimbol = 'd';
                 }
             }
 
-            System.out.println("Введите путь к файлу:");
-            while (true) {
-                uri = in.nextLine();
-                File file = new File(uri);
-                if (file.exists()) {
-                    break;
-                } else {
-                    System.out.println("Такого файла не сущечвует");
-                }
-            }
-
+//          Попробовать сделать проверку на не натуральное число
             System.out.println("Сдвиг на (натуральное не отрицательное число):");
             while (true) {
                 key = in.nextInt();
@@ -76,45 +58,53 @@ public class CaesarCipher {
 
     //    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
 //    C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\textCoded.txt
-    static public void encrypt() {
-        getCaesarCipherData();
-        List<Character> fileText = FileWork.getCharList(uri);
-        List<Character> encryptedText;
+    static public void encrypt(String uri) {
         try {
+            getCaesarCipherData();
+            List<Character> textFile = FileWork.getCharList(uri);
+            String encryptedText;
 
-            if (isDecoding) {
+            if (methodSimbol == 'd') {
                 if (isLeft) {
-                    encryptedText = RightCoding(fileText);
+                    encryptedText = RightCoding(textFile);
                 } else {
-                    encryptedText = LeftCoding(fileText);
+                    encryptedText = LeftCoding(textFile);
                 }
             } else {
                 if (isLeft) {
-                    encryptedText = LeftCoding(fileText);
+                    encryptedText = LeftCoding(textFile);
                 } else {
-                    encryptedText = RightCoding(fileText);
+                    encryptedText = RightCoding(textFile);
                 }
             }
 
-            FileWork.setEncryptFile(encryptedText, uri, isDecoding);
+            FileWork.setFile(encryptedText, uri, methodSimbol);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static List<Character> LeftCoding(List<Character> inputText) {
+    public static String LeftCoding(List<Character> inputText) {
         Stream<Character> stream = inputText.stream();
-        key = simbolsText.size() - (key % simbolsText.size());
-        return stream.filter(x -> simbolsText.contains(x)).
-                map(x -> simbolsText.get((simbolsText.indexOf(x) + key) % simbolsText.size())).collect(Collectors.toList());
+        key = Main.alphabet.size() - (key % Main.alphabet.size());
+        return stream.filter(x -> Main.alphabet.contains(x)).
+                map(x -> Main.alphabet.get((Main.alphabet.indexOf(x) + key) % Main.alphabet.size()))
+                .collect(Collector.of(
+                        StringBuilder::new,
+                        StringBuilder::append,
+                        StringBuilder::append,
+                        StringBuilder::toString));
     }
 
-    public static List<Character> RightCoding(List<Character> inputText) {
+    public static String RightCoding(List<Character> inputText) {
         Stream<Character> stream = inputText.stream();
-        return stream.filter(x -> simbolsText.contains(x)).
-                map(x -> simbolsText.get((simbolsText.indexOf(x) + key) % simbolsText.size())).collect(Collectors.toList());
+        return stream.filter(x -> Main.alphabet.contains(x)).
+                map(x -> Main.alphabet.get((Main.alphabet.indexOf(x) + key) % Main.alphabet.size()))
+                .collect(Collector.of(
+                        StringBuilder::new,
+                        StringBuilder::append,
+                        StringBuilder::append,
+                        StringBuilder::toString));
     }
-
-
 }

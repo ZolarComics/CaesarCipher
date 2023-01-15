@@ -9,21 +9,23 @@ import java.util.List;
 
 public class FileWork {
 
-    public static String getNewFileName(String oldFileName, boolean isDecoding) {
+    public static String getNewFileName(String oldFileName, char key) {
         int dotIndex = oldFileName.lastIndexOf(".");
         String keyName;
-        if (isDecoding) {
+        if (key == 'd') {
             keyName = "Decoded";
-        } else {
+        } else if (key == 'c') {
             keyName = "Coded";
+        } else {
+            keyName = "BruteForced";
         }
-        String newFileNmae = oldFileName.substring(0, dotIndex) + keyName + oldFileName.substring(dotIndex);
+        String newFileName = oldFileName.substring(0, dotIndex) + keyName + oldFileName.substring(dotIndex);
         int count = 0;
-        while (Files.exists(Path.of(newFileNmae))) {
+        while (Files.exists(Path.of(newFileName))) {
             count++;
-            newFileNmae = oldFileName.substring(0, dotIndex) + keyName + count + oldFileName.substring(dotIndex);
+            newFileName = oldFileName.substring(0, dotIndex) + keyName + count + oldFileName.substring(dotIndex);
         }
-        return newFileNmae;
+        return newFileName;
     }
 
     public static List<Character> getCharList(String uri) {
@@ -41,18 +43,13 @@ public class FileWork {
         }
     }
 
-    public static void setEncryptFile(List<Character> fileText, String uri, boolean isDecoding) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        for (char aChar: fileText) {
-            builder.append(aChar);
-        }
-        String encryptedText = builder.toString();
-        System.out.println(encryptedText);
+    public static void setFile(String fileText, String uri, char fileKeyName) throws IOException {
+        System.out.println(fileText);
 
-        ByteBuffer writeBuffer = ByteBuffer.allocate(encryptedText.getBytes().length);
-        writeBuffer.put(encryptedText.getBytes());
+        ByteBuffer writeBuffer = ByteBuffer.allocate(fileText.getBytes().length);
+        writeBuffer.put(fileText.getBytes());
 
-        Path encryptedFile = Files.createFile(Path.of(getNewFileName(uri, isDecoding)));
+        Path encryptedFile = Files.createFile(Path.of(getNewFileName(uri, fileKeyName)));
         if(Files.notExists(encryptedFile)){
             Files.createFile(encryptedFile);
         }
