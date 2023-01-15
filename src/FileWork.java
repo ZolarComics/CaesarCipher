@@ -36,7 +36,6 @@ public class FileWork {
             while (buffReader.ready()) {
                 charList.add((char) buffReader.read());
             }
-            System.out.println(charList);
             return charList;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -49,7 +48,8 @@ public class FileWork {
         ByteBuffer writeBuffer = ByteBuffer.allocate(fileText.getBytes().length);
         writeBuffer.put(fileText.getBytes());
 
-        Path encryptedFile = Files.createFile(Path.of(getNewFileName(uri, fileKeyName)));
+        String path = getNewFileName(uri, fileKeyName);
+        Path encryptedFile = Files.createFile(Path.of(path));
         if(Files.notExists(encryptedFile)){
             Files.createFile(encryptedFile);
         }
@@ -58,6 +58,6 @@ public class FileWork {
             partInputChannel.write(writeBuffer);
             writeBuffer.clear();
         }
-        System.out.println("Файл зашифрован");
+        System.out.println("Результат: " + path);
     }
 }

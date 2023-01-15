@@ -1,74 +1,50 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 public class BruteForce {
 
     public static void breaking(String uri) throws IOException {
-        List<Character> list = FileWork.getCharList(uri);
+            List<Character> chars = FileWork.getCharList(uri);
 
-        for (int k = 0; k < Main.alphabet.size(); k++) {
-            List<Character> decryptedText = new ArrayList<>();
-            for (Character character : list) {
-                int index = Main.alphabet.indexOf(character);
+            for (int k = 0; k < Main.alphabet.size(); k++) {
+                String bruteForcedString;
+                int key = k;
 
-                if ((index - k) >= 0) {
-                    decryptedText.add(Main.alphabet.get(index - k));
-                } else {
-                    decryptedText.add(Main.alphabet.get((index - k) + Main.alphabet.size()));
+                Stream<Character> codedStream = chars.stream();
+                bruteForcedString = codedStream.filter(x -> Main.alphabet.contains(x))
+                        .map(x -> getChar(Main.alphabet.indexOf(x), key))
+                        .collect(Collector.of(
+                                StringBuilder::new,
+                                StringBuilder::append,
+                                StringBuilder::append,
+                                StringBuilder::toString));
+
+                System.out.println("Вариант взлома номер " + k + ": " + bruteForcedString);
+
+                boolean isFirstUpper = Character.isUpperCase(bruteForcedString.charAt(0));
+                boolean isLastLower = Character.isLowerCase(bruteForcedString.charAt(bruteForcedString.length() - 1));
+                boolean isLastADot = Character.toString(bruteForcedString.charAt(bruteForcedString.length() - 1)).equals(".");
+//                Дописать условие, чтобы была не только запята
+                if (bruteForcedString.contains(", ") && isFirstUpper && whatIsLastChar(isLastLower, isLastADot)) {
+                    FileWork.setFile(bruteForcedString, uri, 'b');
+                    break;
                 }
             }
-            String option;
-            StringBuilder builderResult = new StringBuilder();
-            for (char ch: decryptedText) {
-                builderResult.append(ch);
-            }
-            option = builderResult.toString();
+            System.out.println("Программе не удолоась самостоятельо подобрать вариант разшифровки");
+    }
 
-            boolean isFirstUpper = Character.isUpperCase(option.charAt(0));
-            boolean isLastLower = Character.isLowerCase(option.charAt(option.length()-1));
-            boolean isLastADot = Character.toString(option.charAt(option.length()-1)).equals(".");
-            if (option.contains(", ") && isFirstUpper && whatIsLastChar(isLastLower,isLastADot)) {
-                System.out.println("Decrypted Text Using key" + k + ":" + option);
-                FileWork.setFile(option,uri,'b');
-            }
+    static char getChar(int index, int key) {
+        if ((index - key) >= 0) {
+            return Main.alphabet.get(index - key);
+        } else {
+            return Main.alphabet.get((index - key) + Main.alphabet.size());
         }
     }
 
-  static boolean whatIsLastChar(boolean lower, boolean dot){
+    static boolean whatIsLastChar(boolean lower, boolean dot) {
         return lower || dot;
     }
 }
-
-//}
-//    void bruteForce(String cipherText)
-//    {
-//        cipherText=cipherText.toUpperCase();
-//
-//        for(int k=0;k< 26;k++)
-//        {
-//            String decryptedText="";
-//            int key=k;
-//            for(int i=0;i< cipherText.length();i++)
-//            {
-//                int index=b.indexOfChar(cipherText.charAt(i));
-//
-//                if(index==-1)
-//                {
-//                    decryptedText+=cipherText.charAt(i);
-//                    continue;
-//                }
-//                if((index-key)>=0)
-//                {
-//                    decryptedText+=b.charAtIndex(index-key);
-//                }
-//                else
-//                {
-//                    decryptedText+=b.charAtIndex((index-key)+26);
-//                }
-//            }
-//
-//            System.out.println("Decrypted Text Using key"+key+":"+decryptedText);
-//        }
-//    }
-//}

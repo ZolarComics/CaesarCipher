@@ -3,9 +3,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    // Нужно подумать не вызывается или не создается что-то, где-нибудь лишний раз.
 // Зацыклить main код, чтобы можно было с одного запуска программы делать множество действий.
-// Начать в делать БРУТФОРС.
+
+    public static final String MESSAGE = "Неверный ввод";
     static List<Character> alphabet = FileWork.getCharList("src/alphabet");
     static String uri;
 
@@ -13,19 +13,19 @@ public class Main {
 //        C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
 //        C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\textCoded.txt
         try (Scanner in = new Scanner(System.in)) {
-            uri = getUri(in);
-            System.out.println("Шифр цезаря\\Брутфорс (cc\\bf):");
-            String toDo = "";
-            while (!toDo.equals("cc") && !toDo.equals("bf")) {
-                toDo = in.nextLine();
-                if (!toDo.equals("cc") && !toDo.equals("bf")) {
-                    System.out.println("Неверный ввод");
-                } else if (toDo.equals("cc")) {
-                    CaesarCipher.encrypt(uri);
-                } else  {
-                    BruteForce.breaking(uri);
+                uri = getUri(in);
+                System.out.println("Шифр цезаря\\Брутфорс (cc\\bf):");
+                String toDo = "";
+                while (!toDo.equals("cc") && !toDo.equals("bf")) {
+                    toDo = in.nextLine();
+                    if (!toDo.equals("cc") && !toDo.equals("bf")) {
+                        System.out.println(MESSAGE);
+                    } else if (toDo.equals("cc")) {
+                        CaesarCipher.converting(uri);
+                    } else {
+                        BruteForce.breaking(uri);
+                    }
                 }
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
