@@ -23,7 +23,7 @@ public class Main {
                     } else if (toDo.equals("cc")) {
                         CaesarCipher.converting(uri);
                     } else {
-                        BruteForce.breaking(uri);
+                        BruteForce.breaking(uri, in);
                     }
                 }
         } catch (Exception e) {
@@ -44,6 +44,23 @@ public class Main {
             }
         }
         return uriOption;
+    }
+
+    public static int checkForInt(Scanner in) {
+        int optionKey;
+        while (true) {
+            try {
+                optionKey = Integer.parseInt(in.next());
+                if (optionKey <= 0) {
+                    System.out.println(Main.MESSAGE);
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println(Main.MESSAGE);
+            }
+        }
+        return optionKey;
     }
 
 }

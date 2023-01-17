@@ -30,20 +30,7 @@ public class CaesarCipher {
 
     static int getKey(Scanner in) {
         System.out.println("Сдвиг на (натуральное не отрицательное число):");
-        int optionKey;
-        while (true) {
-            try {
-                optionKey = Integer.parseInt(in.next());
-                if (optionKey <= 0) {
-                    System.out.println(Main.MESSAGE);
-                } else {
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println(Main.MESSAGE);
-            }
-        }
-        return optionKey;
+        return Main.checkForInt(in);
     }
 
     static boolean isLeftShift(Scanner in) {
