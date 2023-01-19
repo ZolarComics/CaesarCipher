@@ -3,15 +3,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-// Зацыклить main код, чтобы можно было с одного запуска программы делать множество действий.
 
     public static final String MESSAGE = "Неверный ввод";
+//    Списко alphabet содержит в себе все символы, которые используются в шифровании.
+//    Так же для того, чтобы можно было в последсвии изменить алфавит для шифрования, я вынес его в отдельные файл внутри проекта.
     static List<Character> alphabet = FileWork.getCharList("src/alphabet");
     static String uri;
 
     public static void main(String[] args) {
-//        C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\text.txt
-//        C:\Users\srgjz\OneDrive\Рабочий стол\encryptingTest\textCoded.txt
         try (Scanner in = new Scanner(System.in)) {
                 uri = getUri(in);
                 System.out.println("Шифр цезаря\\Брутфорс (cc\\bf):");
@@ -31,6 +30,8 @@ public class Main {
         }
     }
 
+
+//    Метод, который проверяет существует ли файл, переданный пользователем. Если такой файл существует, то ссылка передается далее.
     static String getUri(Scanner in) {
         System.out.println("Введите путь к файлу:");
         String uriOption;
@@ -46,6 +47,9 @@ public class Main {
         return uriOption;
     }
 
+
+//    Проверка значения вводимого пользователем, это необходимо для того,
+//    чтобы пользователь не передал, некорретное значение на выполнение программе.
     public static int checkForInt(Scanner in) {
         int optionKey;
         while (true) {

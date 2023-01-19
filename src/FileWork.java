@@ -9,12 +9,14 @@ import java.util.List;
 
 public class FileWork {
 
-    public static String getNewFileName(String oldFileName, char key) {
+//    Метод, который по переданным данным создает новое имя файла. Так же, если файл с таким именем уже существует,
+//    то к назавнию добовляется число (число будет увеличиваться, пока имя файла не будет доступно для создани).
+    public static String getNewFileName(String oldFileName, char keyChar) {
         int dotIndex = oldFileName.lastIndexOf(".");
         String keyName;
-        if (key == 'd') {
+        if (keyChar == 'd') {
             keyName = "Decoded";
-        } else if (key == 'c') {
+        } else if (keyChar == 'c') {
             keyName = "Coded";
         } else {
             keyName = "BruteForced";
@@ -28,6 +30,7 @@ public class FileWork {
         return newFileName;
     }
 
+//    Метод, который возвращает список символов, полученных из файла по ссылке uri.
     public static List<Character> getCharList(String uri) {
         try (Reader file = new FileReader(uri)) {
             BufferedReader buffReader = new BufferedReader(file);
@@ -42,6 +45,8 @@ public class FileWork {
         }
     }
 
+//    Метод, который создает новый файл по ссылке, которую он получает из метода getNewFileName.
+//    После создания файла в него записывается строка (итог выполнения программы).
     public static void setFile(String fileText, String uri, char fileKeyName) throws IOException {
         System.out.println(fileText);
 
